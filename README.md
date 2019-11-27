@@ -15,6 +15,7 @@ end up breaking them down into categories and re structure the repository.
 
 ### Karate Chop
 [CodeKata Kata02: Karate Chop](http://codekata.com/kata/kata02-karate-chop/) - Dave Thomas
+
 Implement five different versions of a binary search algorithm that takes an integer search target and a sorted
 array of integers. It should return the integer index of the target in the array, or -1 if the target is not
 in the array.
