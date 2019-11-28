@@ -25,3 +25,30 @@ func IterativeBinarySearch(needle int, haystack []int) int {
 
 	return NotFound
 }
+
+func RecursiveBinarySearch(needle int, haystack []int) int {
+	min, max := 0, len(haystack)-1
+
+	if max >= min {
+		i := int(math.Floor(float64(min+max) / 2))
+		v := haystack[i]
+
+		switch {
+		case v == needle:
+			return i
+		case v < needle:
+			nextMin := i + 1
+			r := RecursiveBinarySearch(needle, haystack[nextMin:])
+
+			if r != NotFound {
+				r += nextMin
+			}
+
+			return r
+		case v > needle:
+			return RecursiveBinarySearch(needle, haystack[:i])
+		}
+	}
+
+	return NotFound
+}

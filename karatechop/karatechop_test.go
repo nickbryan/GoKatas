@@ -82,6 +82,31 @@ func BenchmarkIterativeBinarySearch(b *testing.B) {
 	}
 }
 
+func TestRecursiveBinarySearch(t *testing.T) {
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := RecursiveBinarySearch(tc.input, tc.set)
+			if got != tc.want {
+				t.Errorf("expected: %d, got: %d", tc.want, got)
+			}
+		})
+	}
+}
+
+func BenchmarkRecursiveBinarySearch(b *testing.B) {
+	for name, bm := range benchmarks {
+		b.Run(name, func(b *testing.B) {
+			s := makeSlice(bm.len)
+			var r int
+			for n := 0; n < b.N; n++ {
+				// store result locally to prevent compiler eliminating function call.
+				r = RecursiveBinarySearch(bm.target, s)
+			}
+			result = r
+		})
+	}
+}
+
 func makeSlice(len int) []int {
 	s := make([]int, len)
 	for i := range s {

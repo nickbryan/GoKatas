@@ -21,4 +21,4 @@ array of integers. It should return the integer index of the target in the array
 in the array.
 
 * Implemented an iterative binary search satisfying the given test cases + benchmarks.
-
+* Implemented a recursive binary search satisfying the given test cases + benchmarks.
