@@ -20,5 +20,5 @@ Implement five different versions of a binary search algorithm that takes an int
 array of integers. It should return the integer index of the target in the array, or -1 if the target is not
 in the array.
 
-* Implemented an iterative binary search satisfying the given test cases.
+* Implemented an iterative binary search satisfying the given test cases + benchmarks.
 

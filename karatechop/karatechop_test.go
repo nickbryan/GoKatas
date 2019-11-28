@@ -1,11 +1,16 @@
 package karatechop
 
-import "testing"
+import (
+	"testing"
+)
+
+// result is used to prevent the compiler from eliminating any Benchmarks during optimisations by storing th result
+// to a package level variable.
+var result int
 
 var tests = map[string]struct {
-	input int
-	set   []int
-	want  int
+	input, want int
+	set         []int
 }{
 	"target not in empty set":          {input: 3, set: []int{}, want: -1},
 	"target not in single element set": {input: 3, set: []int{1}, want: -1},
@@ -30,6 +35,28 @@ var tests = map[string]struct {
 	"target not in 4 element set 5":        {input: 8, set: []int{1, 3, 5, 7}, want: -1},
 }
 
+var benchmarks = map[string]struct {
+	len, target int
+}{
+	"first index large":  {len: 1e6, target: 1},
+	"last index large":   {len: 1e6, target: 1e6},
+	"middle index large": {len: 1e6, target: 0.5e6},
+	"upper half large":   {len: 1e6, target: 0.8e6},
+	"lower half large":   {len: 1e6, target: 0.2e6},
+
+	"first index medium":  {len: 1e5, target: 1},
+	"last index medium":   {len: 1e5, target: 1e5},
+	"middle index medium": {len: 1e5, target: 0.5e5},
+	"upper half medium":   {len: 1e5, target: 0.8e5},
+	"lower half medium":   {len: 1e5, target: 0.2e5},
+
+	"first index small":  {len: 1e4, target: 1},
+	"last index small":   {len: 1e4, target: 1e5},
+	"middle index small": {len: 1e4, target: 0.5e4},
+	"upper half small":   {len: 1e4, target: 0.8e4},
+	"lower half small":   {len: 1e4, target: 0.2e4},
+}
+
 func TestIterativeBinarySearch(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -39,4 +66,26 @@ func TestIterativeBinarySearch(t *testing.T) {
 			}
 		})
 	}
+}
+
+func BenchmarkIterativeBinarySearch(b *testing.B) {
+	for name, bm := range benchmarks {
+		b.Run(name, func(b *testing.B) {
+			s := makeSlice(bm.len)
+			var r int
+			for n := 0; n < b.N; n++ {
+				// store result locally to prevent compiler eliminating function call.
+				r = IterativeBinarySearch(bm.target, s)
+			}
+			result = r
+		})
+	}
+}
+
+func makeSlice(len int) []int {
+	s := make([]int, len)
+	for i := range s {
+		s[i] = i + 1
+	}
+	return s
 }
