@@ -4,23 +4,24 @@ import (
 	"math"
 )
 
+const NotFound = -1
+
 func IterativeBinarySearch(needle int, haystack []int) int {
-	min := 0
-	max := len(haystack) - 1
+	min, max := 0, len(haystack)-1
 
 	for max >= min {
 		i := int(math.Floor(float64(min+max) / 2))
+		v := haystack[i]
 
-		if haystack[i] == needle {
+		switch {
+		case v == needle:
 			return i
-		}
-
-		if haystack[i] < needle {
+		case v < needle:
 			min = i + 1
-		} else {
+		case v > needle:
 			max = i - 1
 		}
 	}
 
-	return -1
+	return NotFound
 }
