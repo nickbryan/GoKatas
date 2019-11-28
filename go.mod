@@ -1,3 +1,3 @@
-module github.com/nickbryan/go-katas
+module github.com/nickbryan/GoKatas
 
 go 1.13
