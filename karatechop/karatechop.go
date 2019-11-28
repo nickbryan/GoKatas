@@ -4,10 +4,13 @@ import (
 	"math"
 )
 
+// NotFound will be returned when the needle can not be found within the given haystack.
 const NotFound = -1
 
+// BinarySearch is the function signature confirming to the kata specification.
 type BinarySearch func(needle int, haystack []int) int
 
+// IterativeBinarySearch uses a simple for loop and offsets to traverse the haystack when looking for the given needle.
 func IterativeBinarySearch(needle int, haystack []int) int {
 	min, max := 0, len(haystack)-1
 
@@ -28,6 +31,9 @@ func IterativeBinarySearch(needle int, haystack []int) int {
 	return NotFound
 }
 
+// RecursiveBinarySearch uses slice splitting and recursion to find the needle in the given haystack. When the needle
+// is in the upper half of the haystack, we must add the starting index of the upper half (mid point + 1) to the return
+// value in order to return the correct index.
 func RecursiveBinarySearch(needle int, haystack []int) int {
 	min, max := 0, len(haystack)-1
 
