@@ -6,6 +6,8 @@ import (
 
 const NotFound = -1
 
+type BinarySearch func(needle int, haystack []int) int
+
 func IterativeBinarySearch(needle int, haystack []int) int {
 	min, max := 0, len(haystack)-1
 
