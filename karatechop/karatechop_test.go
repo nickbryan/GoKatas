@@ -20,6 +20,14 @@ func BenchmarkRecursiveBinarySearch(b *testing.B) {
 	runBenchmarks(b, RecursiveBinarySearch)
 }
 
+func TestTailRecursiveBinarySearch(t *testing.T) {
+	runTests(t, TailRecursiveBinarySearch)
+}
+
+func BenchmarkTailRecursiveBinarySearch(b *testing.B) {
+	runBenchmarks(b, TailRecursiveBinarySearch)
+}
+
 var tests = map[string]struct {
 	input, want int
 	set         []int

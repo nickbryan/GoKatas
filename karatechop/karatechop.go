@@ -60,3 +60,31 @@ func RecursiveBinarySearch(needle int, haystack []int) int {
 
 	return NotFound
 }
+
+func TailRecursiveBinarySearch(needle int, haystack []int) int {
+	// Define tailRecursiveBinarySearch upfront so we can call it recursively.
+	// We could define this closure as a function elsewhere but this allows us to preserve encapsulation.
+	var tailRecursiveBinarySearch func(needle int, haystack []int, min, max int) int
+
+	tailRecursiveBinarySearch = func(needle int, haystack []int, min, max int) int {
+		if max < min {
+			return NotFound
+		}
+
+		i := int(math.Floor(float64(min+max) / 2))
+		v := haystack[i]
+
+		switch {
+		case v == needle:
+			return i
+		case v < needle:
+			min = i + 1
+		case v > needle:
+			max = i - 1
+		}
+
+		return tailRecursiveBinarySearch(needle, haystack, min, max)
+	}
+
+	return tailRecursiveBinarySearch(needle, haystack, 0, len(haystack) - 1)
+}
