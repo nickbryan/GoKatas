@@ -7,7 +7,7 @@ import (
 // NotFound will be returned when the needle can not be found within the given haystack.
 const NotFound = -1
 
-// BinarySearch is the function signature confirming to the kata specification.
+// BinarySearch is the function signature conforming to the kata specification.
 type BinarySearch func(needle int, haystack []int) int
 
 // IterativeBinarySearch uses a simple for loop and offsets to traverse the haystack when looking for the given needle.
@@ -61,30 +61,28 @@ func RecursiveBinarySearch(needle int, haystack []int) int {
 	return NotFound
 }
 
+// TailRecursiveBinarySearch uses a similar method to the IterativeBinarySearch algorithm except it replaces the
+// for loop with a tail recursive call to the closure; passing min and max into the next search call.
 func TailRecursiveBinarySearch(needle int, haystack []int) int {
-	// Define tailRecursiveBinarySearch upfront so we can call it recursively.
-	// We could define this closure as a function elsewhere but this allows us to preserve encapsulation.
-	var tailRecursiveBinarySearch func(needle int, haystack []int, min, max int) int
+	return tailRecursiveBinarySearch(needle, haystack, 0, len(haystack) - 1)
+}
 
-	tailRecursiveBinarySearch = func(needle int, haystack []int, min, max int) int {
-		if max < min {
-			return NotFound
-		}
-
-		i := int(math.Floor(float64(min+max) / 2))
-		v := haystack[i]
-
-		switch {
-		case v == needle:
-			return i
-		case v < needle:
-			min = i + 1
-		case v > needle:
-			max = i - 1
-		}
-
-		return tailRecursiveBinarySearch(needle, haystack, min, max)
+func tailRecursiveBinarySearch(needle int, haystack []int, min, max int) int {
+	if max < min {
+		return NotFound
 	}
 
-	return tailRecursiveBinarySearch(needle, haystack, 0, len(haystack) - 1)
+	i := int(math.Floor(float64(min+max) / 2))
+	v := haystack[i]
+
+	switch {
+	case v == needle:
+		return i
+	case v < needle:
+		min = i + 1
+	case v > needle:
+		max = i - 1
+	}
+
+	return tailRecursiveBinarySearch(needle, haystack, min, max)
 }
