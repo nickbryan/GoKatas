@@ -130,3 +130,50 @@ func ParallelIterativeBinarySearch(needle int, haystack []int) int {
 	wg.Wait()
 	return result
 }
+
+// ParallelRecursiveBinarySearch splits each recursive call into 2 parallel searches. Coming up with
+// a fifth implementation proved challenging.
+func ParallelRecursiveBinarySearch(needle int, haystack []int) int {
+	var wg sync.WaitGroup
+	const chunks = 2
+
+	chunkSize := (len(haystack) + chunks - 1) / chunks
+	result := NotFound
+
+	for start := 0; start < len(haystack); start += chunkSize {
+		end := start + chunkSize
+
+		if end > len(haystack) {
+			end = len(haystack)
+		}
+
+		wg.Add(1)
+		go func(hs []int, min, max int) {
+			if max >= min && result == NotFound {
+				i := int(math.Floor(float64(min+max) / 2))
+				v := hs[i]
+
+				switch {
+				case v == needle:
+					result = i
+				case v < needle:
+					nextMin := i + 1
+					r := ParallelRecursiveBinarySearch(needle, haystack[nextMin:])
+
+					if r != NotFound {
+						r += nextMin
+					}
+
+					result = r
+				case v > needle:
+					result = ParallelRecursiveBinarySearch(needle, haystack[:i])
+				}
+			}
+
+			wg.Done()
+		}(haystack, start, end-1)
+	}
+
+	wg.Wait()
+	return result
+}

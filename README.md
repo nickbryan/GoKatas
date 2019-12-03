@@ -24,3 +24,4 @@ in the array.
 * A recursive binary search satisfying the given test cases + benchmarks.
 * A tail recursive binary search satisfying the given test cases + benchmarks.
 * A parallel iterative binary search satisfying the given test cases + benchmarks.
+* A parallel recursive binary search satisfying the given test cases + benchmarks (hard to come up with a fresh idea).

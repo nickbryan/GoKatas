@@ -36,6 +36,14 @@ func BenchmarkParallelIterativeBinarySearch(b *testing.B) {
 	runBenchmarks(b, ParallelIterativeBinarySearch)
 }
 
+func TestParallelRecursiveBinarySearch(t *testing.T) {
+	runTests(t, ParallelRecursiveBinarySearch)
+}
+
+func BenchmarkParallelRecursiveBinarySearch(b *testing.B) {
+	runBenchmarks(b, ParallelRecursiveBinarySearch)
+}
+
 var tests = map[string]struct {
 	input, want int
 	set         []int
@@ -78,23 +86,23 @@ var (
 	benchmarks = map[string]struct {
 		len, target int
 	}{
-		"first index large":  {len: 1e6, target: 1},
-		"last index large":   {len: 1e6, target: 1e6},
-		"middle index large": {len: 1e6, target: 0.5e6},
-		"upper half large":   {len: 1e6, target: 0.8e6},
-		"lower half large":   {len: 1e6, target: 0.2e6},
-
-		"first index medium":  {len: 1e5, target: 1},
-		"last index medium":   {len: 1e5, target: 1e5},
-		"middle index medium": {len: 1e5, target: 0.5e5},
-		"upper half medium":   {len: 1e5, target: 0.8e5},
-		"lower half medium":   {len: 1e5, target: 0.2e5},
-
-		"first index small":  {len: 1e4, target: 1},
-		"last index small":   {len: 1e4, target: 1e5},
-		"middle index small": {len: 1e4, target: 0.5e4},
-		"upper half small":   {len: 1e4, target: 0.8e4},
-		"lower half small":   {len: 1e4, target: 0.2e4},
+		"first index large": {len: 1e6, target: 1},
+		//"last index large":   {len: 1e6, target: 1e6},
+		//"middle index large": {len: 1e6, target: 0.5e6},
+		//"upper half large":   {len: 1e6, target: 0.8e6},
+		//"lower half large":   {len: 1e6, target: 0.2e6},
+		//
+		//"first index medium":  {len: 1e5, target: 1},
+		//"last index medium":   {len: 1e5, target: 1e5},
+		//"middle index medium": {len: 1e5, target: 0.5e5},
+		//"upper half medium":   {len: 1e5, target: 0.8e5},
+		//"lower half medium":   {len: 1e5, target: 0.2e5},
+		//
+		//"first index small":  {len: 1e4, target: 1},
+		//"last index small":   {len: 1e4, target: 1e5},
+		//"middle index small": {len: 1e4, target: 0.5e4},
+		//"upper half small":   {len: 1e4, target: 0.8e4},
+		//"lower half small":   {len: 1e4, target: 0.2e4},
 	}
 
 	// result is used to prevent the compiler from eliminating any Benchmarks during optimisations by storing th result
