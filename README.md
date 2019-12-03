@@ -25,3 +25,9 @@ in the array.
 * A tail recursive binary search satisfying the given test cases + benchmarks.
 * A parallel iterative binary search satisfying the given test cases + benchmarks.
 * A parallel recursive binary search satisfying the given test cases + benchmarks (hard to come up with a fresh idea).
+
+### Data Munging
+[CodeKata Kata04: Data Munging](http://codekata.com/kata/kata04-data-munging/) - Dave Thomas
+
+Part One: Parse weather.dat and output the day number (column one) with the smallest temperature spread(the maximum 
+temperature is the second column, the minimum the third column). 
