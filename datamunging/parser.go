@@ -2,8 +2,8 @@ package datamunging
 
 import (
 	"bufio"
+	"fmt"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -14,47 +14,29 @@ type Row struct {
 
 type Rows []Row
 
-func Parse(r io.Reader) Rows {
+func Parse(r io.Reader) (Rows, error) {
 	ls := bufio.NewScanner(r)
 	ls.Split(bufio.ScanLines)
-	ls.Scan()
-	ls.Scan()
 
 	var rows Rows
+	var scanned int
 	for ls.Scan() {
-		ws := bufio.NewScanner(strings.NewReader(ls.Text()))
-		ws.Split(bufio.ScanWords)
-
-		var records [3]string
-		for i := 0; i < 3; i++ {
-			ws.Scan()
-			records[i] = ws.Text()
+		// skip the first two lines of the file (header and blank line before data)
+		if scanned++; scanned <= 2 {
+			continue
 		}
 
-		d, err := strconv.ParseUint(records[0], 10, 32)
-		if err != nil {
-			return nil
+		row := Row{}
+		if _, err := fmt.Fscan(strings.NewReader(ls.Text()), &row.Day, &row.Min, &row.Max); err != nil {
+			return nil, fmt.Errorf("unable to read values from line %d: %w", scanned, err)
 		}
 
-		mn, err := strconv.ParseFloat(records[1], 64)
-		if err != nil {
-			return nil
-		}
-
-		mx, err := strconv.ParseFloat(records[2], 64)
-		if err != nil {
-			return nil
-		}
-
-		rows = append(rows, Row{
-			Day: uint(d),
-			Min: mn,
-			Max: mx,
-		})
+		rows = append(rows, row)
 	}
-	//if err := scanner.Err(); err != nil {
-	//		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	//	}
 
-	return rows
+	if err := ls.Err(); err != nil {
+		return nil, fmt.Errorf("unable to scan line: %w", err)
+	}
+
+	return rows, nil
 }

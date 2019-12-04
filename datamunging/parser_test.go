@@ -73,7 +73,11 @@ func TestParse(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			got := Parse(strings.NewReader(tc.data))
+			got, err := Parse(strings.NewReader(tc.data))
+			if err != nil {
+				t.Fatalf("an error occured on Parse: %v", err)
+			}
+
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("expected: %v, got: %v", tc.want, got)
 			}
