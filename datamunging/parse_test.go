@@ -21,9 +21,33 @@ func TestParse(t *testing.T) {
    1  88    59`,
 			want: Rows{
 				Row{
-					Day: 1,
-					Min: 88,
-					Max: 59,
+					Day: "1",
+					Max: 88,
+					Min: 59,
+				},
+			},
+		},
+		"parses special characters in min and max": {
+			data: ` Dy MxT   MnT
+
+   1  88*    59*`,
+			want: Rows{
+				Row{
+					Day: "1",
+					Max: 88,
+					Min: 59,
+				},
+			},
+		},
+		"parses non numeric days": {
+			data: ` Dy MxT   MnT
+
+   mo  88    59`,
+			want: Rows{
+				Row{
+					Day: "mo",
+					Max: 88,
+					Min: 59,
 				},
 			},
 		},
@@ -35,19 +59,19 @@ func TestParse(t *testing.T) {
    3  77    55`,
 			want: Rows{
 				Row{
-					Day: 1,
-					Min: 88,
-					Max: 59,
+					Day: "1",
+					Max: 88,
+					Min: 59,
 				},
 				Row{
-					Day: 2,
-					Min: 79,
-					Max: 63,
+					Day: "2",
+					Max: 79,
+					Min: 63,
 				},
 				Row{
-					Day: 3,
-					Min: 77,
-					Max: 55,
+					Day: "3",
+					Max: 77,
+					Min: 55,
 				},
 			},
 		},
@@ -58,14 +82,14 @@ func TestParse(t *testing.T) {
    2  79    63    71          46.5       0.00         330  8.7 340  23  3.3  70 28 1004.5`,
 			want: Rows{
 				Row{
-					Day: 1,
-					Min: 88,
-					Max: 59,
+					Day: "1",
+					Max: 88,
+					Min: 59,
 				},
 				Row{
-					Day: 2,
-					Min: 79,
-					Max: 63,
+					Day: "2",
+					Max: 79,
+					Min: 63,
 				},
 			},
 		},
