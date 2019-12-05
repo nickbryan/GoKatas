@@ -20,7 +20,7 @@ func TestParse(t *testing.T) {
 
    1  88    59`,
 			want: Rows{
-				Row{
+				&Row{
 					Day: "1",
 					Max: 88,
 					Min: 59,
@@ -32,7 +32,7 @@ func TestParse(t *testing.T) {
 
    1  88*    59*`,
 			want: Rows{
-				Row{
+				&Row{
 					Day: "1",
 					Max: 88,
 					Min: 59,
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 
    mo  88    59`,
 			want: Rows{
-				Row{
+				&Row{
 					Day: "mo",
 					Max: 88,
 					Min: 59,
@@ -58,17 +58,17 @@ func TestParse(t *testing.T) {
    2  79    63
    3  77    55`,
 			want: Rows{
-				Row{
+				&Row{
 					Day: "1",
 					Max: 88,
 					Min: 59,
 				},
-				Row{
+				&Row{
 					Day: "2",
 					Max: 79,
 					Min: 63,
 				},
-				Row{
+				&Row{
 					Day: "3",
 					Max: 77,
 					Min: 55,
@@ -81,12 +81,12 @@ func TestParse(t *testing.T) {
    1  88    59    74          53.8       0.00 F       280  9.6 270  17  1.6  93 23 1004.5
    2  79    63    71          46.5       0.00         330  8.7 340  23  3.3  70 28 1004.5`,
 			want: Rows{
-				Row{
+				&Row{
 					Day: "1",
 					Max: 88,
 					Min: 59,
 				},
-				Row{
+				&Row{
 					Day: "2",
 					Max: 79,
 					Min: 63,

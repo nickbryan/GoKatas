@@ -29,5 +29,5 @@ in the array.
 ### Data Munging
 [CodeKata Kata04: Data Munging](http://codekata.com/kata/kata04-data-munging/) - Dave Thomas
 
-Part One: Parse weather.dat and output the day number (column one) with the smallest temperature spread(the maximum 
-temperature is the second column, the minimum the third column). 
+Part One: Parse weather.dat and output the day number (column one) with the smallest temperature spread(the minimum 
+temperature is the second column, the maximum the third column). 
