@@ -16,11 +16,11 @@ func (m mockMinSpreadCalculator) MinSpread() *Row {
 
 func TestWriteMinSpread(t *testing.T) {
 	row := &Row{
-		Id:  "1",
-		Min: 5,
-		Max: 10,
+		Id: "1",
+		A:  5,
+		B:  10,
 	}
-	want := fmt.Sprintf("Day: %s, Min Spread: %f\n", row.Id, row.Spread())
+	want := fmt.Sprintf("Day: %s, A Spread: %f\n", row.Id, row.Spread())
 
 	w := new(bytes.Buffer)
 	if err := WriteMinSpread(mockMinSpreadCalculator{row: row}, w); err != nil {
