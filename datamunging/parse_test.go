@@ -11,9 +11,9 @@ func TestParse(t *testing.T) {
 		data string
 		want Rows
 	}{
-		"returns nil if nothing to parse": {
+		"returns empty rows if nothing to parse": {
 			data: ``,
-			want: nil,
+			want: Rows{},
 		},
 		"parses a single record": {
 			data: ` Dy MxT   MnT
@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
    1  88    59`,
 			want: Rows{
 				&Row{
-					Day: "1",
+					Id:  "1",
 					Max: 88,
 					Min: 59,
 				},
@@ -33,19 +33,19 @@ func TestParse(t *testing.T) {
    1  88*    59*`,
 			want: Rows{
 				&Row{
-					Day: "1",
+					Id:  "1",
 					Max: 88,
 					Min: 59,
 				},
 			},
 		},
-		"parses non numeric days": {
+		"parses non numeric identifiers": {
 			data: ` Dy MxT   MnT
 
    mo  88    59`,
 			want: Rows{
 				&Row{
-					Day: "mo",
+					Id:  "mo",
 					Max: 88,
 					Min: 59,
 				},
@@ -59,17 +59,17 @@ func TestParse(t *testing.T) {
    3  77    55`,
 			want: Rows{
 				&Row{
-					Day: "1",
+					Id:  "1",
 					Max: 88,
 					Min: 59,
 				},
 				&Row{
-					Day: "2",
+					Id:  "2",
 					Max: 79,
 					Min: 63,
 				},
 				&Row{
-					Day: "3",
+					Id:  "3",
 					Max: 77,
 					Min: 55,
 				},
@@ -82,12 +82,12 @@ func TestParse(t *testing.T) {
    2  79    63    71          46.5       0.00         330  8.7 340  23  3.3  70 28 1004.5`,
 			want: Rows{
 				&Row{
-					Day: "1",
+					Id:  "1",
 					Max: 88,
 					Min: 59,
 				},
 				&Row{
-					Day: "2",
+					Id:  "2",
 					Max: 79,
 					Min: 63,
 				},

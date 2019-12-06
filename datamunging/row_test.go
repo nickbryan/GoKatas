@@ -36,16 +36,16 @@ func TestRows_MinSpread(t *testing.T) {
 			want: &Row{},
 		},
 		"returns the only record if set has single record": {
-			rows: Rows{&Row{Day: "1", Min: 1, Max: 6}},
-			want: &Row{Day: "1", Min: 1, Max: 6},
+			rows: Rows{&Row{Id: "1", Min: 1, Max: 6}},
+			want: &Row{Id: "1", Min: 1, Max: 6},
 		},
 		"returns the record with minimum spread when set has multiple records": {
-			rows: Rows{&Row{Day: "1", Min: 1, Max: 16}, &Row{Day: "2", Min: 1, Max: 3}},
-			want: &Row{Day: "2", Min: 1, Max: 3},
+			rows: Rows{&Row{Id: "1", Min: 1, Max: 16}, &Row{Id: "2", Min: 1, Max: 3}},
+			want: &Row{Id: "2", Min: 1, Max: 3},
 		},
 		"returns the most recent record if set has multiple records with matching min spread": {
-			rows: Rows{&Row{Day: "1", Min: 1, Max: 2}, &Row{Day: "2", Min: 1, Max: 2}, &Row{Day: "3", Min: 1, Max: 2}},
-			want: &Row{Day: "3", Min: 1, Max: 2},
+			rows: Rows{&Row{Id: "1", Min: 1, Max: 2}, &Row{Id: "2", Min: 1, Max: 2}, &Row{Id: "3", Min: 1, Max: 2}},
+			want: &Row{Id: "3", Min: 1, Max: 2},
 		},
 	}
 

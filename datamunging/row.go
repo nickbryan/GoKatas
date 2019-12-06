@@ -2,7 +2,7 @@ package datamunging
 
 // Row represents a single row in the data.
 type Row struct {
-	Day      string
+	Id       string
 	Min, Max float64
 }
 
