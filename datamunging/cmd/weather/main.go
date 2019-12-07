@@ -1,34 +1,39 @@
 package main
 
 import (
-	"flag"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 
-	"github.com/nickbryan/GoKatas/datamunging"
+	"github.com/nickbryan/GoKatas/datamunging/cmd/internal"
 )
 
+const path = "/data/weather.dat"
+
 func main() {
-	var err error
-
-	file := flag.String("file", "", "the path to the data file")
-	flag.Parse()
-
-	if *file == "" {
-		log.Fatal("file not specified")
-	}
-
-	f, err := os.Open(*file)
+	f, err := readFile()
 	if err != nil {
-		log.Fatalf("unable to open file: %v", err)
+		log.Fatalln(err)
 	}
 
-	rows := datamunging.Rows{}
-	if err = rows.ReadFrom(f, "Dy", "MnT", "MxT"); err != nil {
-		log.Fatalf("unable to parse file: %v", err)
+	app := internal.NewApp(f, os.Stdout, "Dy", "MnT", "MxT")
+	if err := app.Run(); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func readFile() (*os.File, error) {
+	_, p, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, fmt.Errorf("unable to gather Caller information")
 	}
 
-	if err = datamunging.WriteMinSpread(&rows, os.Stdout); err != nil {
-		log.Fatalf("unable to write to Stdout: %v", err)
+	f, err := os.Open(filepath.Dir(p) + path)
+	if err != nil {
+		return nil, fmt.Errorf("unable to open file: %w", err)
 	}
+
+	return f, nil
 }
