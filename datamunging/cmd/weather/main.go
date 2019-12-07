@@ -23,13 +23,12 @@ func main() {
 		log.Fatalf("unable to open file: %v", err)
 	}
 
-	rows, err := datamunging.Parse(f)
-	if err != nil {
+	rows := datamunging.Rows{}
+	if err = rows.ReadFrom(f, "Dy", "MnT", "MxT"); err != nil {
 		log.Fatalf("unable to parse file: %v", err)
 	}
 
 	if err = datamunging.WriteMinSpread(&rows, os.Stdout); err != nil {
 		log.Fatalf("unable to write to Stdout: %v", err)
 	}
-
 }

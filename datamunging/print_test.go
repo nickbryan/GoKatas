@@ -7,20 +7,20 @@ import (
 )
 
 type mockMinSpreadCalculator struct {
-	row *Row
+	row Row
 }
 
-func (m mockMinSpreadCalculator) MinSpread() *Row {
+func (m mockMinSpreadCalculator) MinSpread() Row {
 	return m.row
 }
 
 func TestWriteMinSpread(t *testing.T) {
-	row := &Row{
+	row := Row{
 		Id: "1",
 		A:  5,
 		B:  10,
 	}
-	want := fmt.Sprintf("Day: %s, A Spread: %f\n", row.Id, row.Spread())
+	want := fmt.Sprintf("%s -- Spread: %f\n", row.Id, row.Spread())
 
 	w := new(bytes.Buffer)
 	if err := WriteMinSpread(mockMinSpreadCalculator{row: row}, w); err != nil {

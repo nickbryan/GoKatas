@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -15,54 +16,115 @@ type Row struct {
 }
 
 // Spread calculates the difference between A and B to give the Spread.
-func (r *Row) Spread() float64 {
+func (r Row) Spread() float64 {
 	return math.Abs(r.A - r.B)
 }
 
 // Rows represents a set of data.
-type Rows []*Row
+type Rows []Row
 
 // ReadFrom scans the given io.Reader and extracts Id, A and B into a Rows. Each Row represents a single
 // parsed line in the data. The first two lines (header and separator) are skipped.
-func (rs *Rows) ReadFrom(r io.Reader) error {
+func (rs *Rows) ReadFrom(r io.Reader, colId, colA, colB string) error {
+	rp := strings.NewReplacer("-", "", "*", "")
+
 	ls := bufio.NewScanner(r)
 	ls.Split(bufio.ScanLines)
 
-	var scanned int
+	i, a, b, err := readHeaderLine(ls, colId, colA, colB)
+	if err == io.EOF {
+		return nil
+	}
+
+	if err != nil {
+		return fmt.Errorf("unable to scan header line: %w", err)
+	}
+
+	var line, col int
 	for ls.Scan() {
 		var row Row
 
-		// skip the first two lines of the file (header and blank line before data)
-		if scanned++; scanned <= 2 {
-			continue
+		cs := bufio.NewScanner(strings.NewReader(rp.Replace(ls.Text())))
+		cs.Split(bufio.ScanWords)
+
+		col = 0
+		for cs.Scan() {
+			switch col {
+			case i:
+				row.Id = cs.Text()
+			case a:
+				v, err := strconv.ParseFloat(cs.Text(), 64)
+				if err != nil {
+					return fmt.Errorf("unabled to parse %s as float: %w", colA, err)
+				}
+
+				row.A = v
+			case b:
+				v, err := strconv.ParseFloat(cs.Text(), 64)
+				if err != nil {
+					return fmt.Errorf("unabled to parse %s as float: %w", colB, err)
+				}
+
+				row.B = v
+			}
+			col++
 		}
 
-		if _, err := fmt.Fscan(strings.NewReader(ls.Text()), &row.Id, &row.A, &row.B); err != nil {
-			return fmt.Errorf("unable to read values from line %d: %w", scanned, err)
+		if col != 0 {
+			*rs = append(*rs, row)
 		}
-
-		*rs = append(*rs, &row)
 	}
 
 	if err := ls.Err(); err != nil {
-		return fmt.Errorf("unable to scan line %d: %w", scanned, err)
+		return fmt.Errorf("unable to scan line %d: %w", line, err)
 	}
 
 	return nil
 }
 
-// MinSpread returns the Row with the minimum Spread value in the set.
-func (rs *Rows) MinSpread() *Row {
-	var msr *Row
+func readHeaderLine(s *bufio.Scanner, i, a, b string) (ii, ai, bi int, err error) {
+	var scanned int
+	ii, ai, bi = -1, -1, -1
 
-	for _, r := range *rs {
-		if msr == nil || r.Spread() <= msr.Spread() {
-			msr = r
-		}
+	s.Scan()
+	if s.Text() == "" {
+		return ii, ai, bi, io.EOF
 	}
 
-	if msr == nil {
-		return &Row{}
+	rs := bufio.NewScanner(strings.NewReader(s.Text()))
+	rs.Split(bufio.ScanWords)
+
+	for rs.Scan() {
+		switch rs.Text() {
+		case i:
+			ii = scanned
+		case a:
+			ai = scanned
+		case b:
+			bi = scanned
+		}
+		scanned++
+	}
+
+	if err = rs.Err(); err != nil {
+		err = fmt.Errorf("unable to scan header column %d: %w", scanned+1, err)
+	}
+
+	if ii == -1 || ai == -1 || bi == -1 {
+		err = fmt.Errorf("unable to read header: %s = %d, %s = %d, %s = %d", i, ii, a, ai, b, bi)
+	}
+
+	return ii, ai, bi, err
+}
+
+// MinSpread returns the Row with the minimum Spread value in the set.
+func (rs *Rows) MinSpread() Row {
+	var msr Row
+
+	for i, r := range *rs {
+		if i == 0 || r.Spread() <= msr.Spread() {
+			msr = r
+		}
 	}
 
 	return msr
