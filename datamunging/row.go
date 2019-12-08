@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// Row represents a single row in the data.
+// Row represents a single row in the dataset.
 type Row struct {
 	Id   string
 	A, B float64
@@ -23,8 +23,10 @@ func (r Row) Spread() float64 {
 // Rows represents a set of data.
 type Rows []Row
 
-// ReadFrom scans the given io.Reader and extracts Id, A and B into a Rows. Each Row represents a single
-// parsed line in the data. The first two lines (header and separator) are skipped.
+// ReadFrom scans the given io.Reader and extracts Id, A and B into a Row. Each Row represents a single
+// parsed line in the data. Special characters - and * are removed from the input data. It is up to the caller
+// to pass in the name of each column in order for ReadFrom to map the correct data. Each row must have the same
+// number of columns as the headers. It is up to the caller to strip this out if necessary.
 func (rs *Rows) ReadFrom(r io.Reader, colId, colA, colB string) error {
 	rp := strings.NewReplacer("-", "", "*", "")
 
@@ -82,6 +84,8 @@ func (rs *Rows) ReadFrom(r io.Reader, colId, colA, colB string) error {
 	return nil
 }
 
+// readHeaderLine returns the index of each of the passed in columns and an error on failure. If the input data
+// is empty then io.EOF will be returned as the error allowing the consumer to handle or ignore as appropriate.
 func readHeaderLine(s *bufio.Scanner, i, a, b string) (ii, ai, bi int, err error) {
 	var scanned int
 	ii, ai, bi = -1, -1, -1

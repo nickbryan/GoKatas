@@ -29,5 +29,16 @@ in the array.
 ### Data Munging
 [CodeKata Kata04: Data Munging](http://codekata.com/kata/kata04-data-munging/) - Dave Thomas
 
-Part One: Parse weather.dat and output the day number (column one) with the smallest temperature spread(the minimum 
-temperature is the second column, the maximum the third column). 
+* __Part One:__ Parse weather.dat and output the day number (column one) with the smallest temperature spread.
+* __Part Two:__ Parse football.dat and output the name of the team with the smallest goal difference.
+* __Part Three:__ Take the two programs written previously and factor out as much common code as possible,
+leaving you with two smaller programs and some kind of shared functionality.
+
+Writing this using TDD allowed me to create some form of abstractions up front (to more easily test), this
+made implementing Part Two fairly simple with some refactoring. The difficulty came when looking to write 
+e2e tests and covering some of the built in Go functions such as `runtime.Caller`. As has been mentioned
+many times before "Prefer duplication over the wrong abstraction"; this is a hard one to get right and there 
+will always be trade offs but I feel that this kata is a perfect demonstration of that sentiment. Next time 
+I attempt this I will focus on trying to create the "right" abstractions over trying to factor out as much
+code as possible.
+

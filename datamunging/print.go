@@ -5,14 +5,14 @@ import (
 	"io"
 )
 
-// MinSpreader returns the Row with the minimum spread.
-type MinSpreader interface {
+// MinSpreadCalculator returns the Row with the minimum spread.
+type MinSpreadCalculator interface {
 	MinSpread() Row
 }
 
-// WriteMinSpread uses the given MinSpreader to write the Row with the minimum spread to the given io.Writer.
-// The Id and minimum spread are written out with a newline.
-func WriteMinSpread(c MinSpreader, w io.Writer) error {
+// WriteMinSpread uses the given MinSpreadCalculator to write the Row with the minimum spread to the given io.Writer.
+// The Id and MinSpread are written out with a newline.
+func WriteMinSpread(c MinSpreadCalculator, w io.Writer) error {
 	row := c.MinSpread()
 	_, err := w.Write([]byte(fmt.Sprintf("%s -- Spread: %f\n", row.Id, row.Spread())))
 	return err
