@@ -42,3 +42,8 @@ will always be trade offs but I feel that this kata is a perfect demonstration o
 I attempt this I will focus on trying to create the "right" abstractions over trying to factor out as much
 code as possible.
 
+### Bloom Filters (Spell Checker)
+[CodeKata Kata05: Bloom Filters](http://codekata.com/kata/kata05-bloom-filters/) - Dave Thomas
+
+Implement a Bloom filter based spell checker.
+
