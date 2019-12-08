@@ -19,6 +19,13 @@ func main() {
 
 func run(w io.Writer) {
 	f, err := readFile()
+	defer func() {
+		err = f.Close()
+		if err != nil {
+			log.Fatalln(fmt.Sprintf("unable to close file pointer: %v", err))
+		}
+	}()
+
 	if err != nil {
 		log.Fatalln(err)
 	}
