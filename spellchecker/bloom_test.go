@@ -4,28 +4,33 @@ import (
 	"testing"
 )
 
+type (
+	adds   []string
+	checks map[string]bool
+)
+
 func TestBloomFilter(t *testing.T) {
 	var tests = map[string]struct {
-		additions []string
-		tests     map[string]bool
+		adds   adds
+		checks checks
 	}{
-		"false for not in empty filter":              {additions: []string{}, tests: map[string]bool{"test": false}},
-		"true for single item":                       {additions: []string{"test"}, tests: map[string]bool{"test": true}},
-		"false for single item not exists":           {additions: []string{"test"}, tests: map[string]bool{"tree": false}},
-		"true for both items in set":                 {additions: []string{"test", "test2"}, tests: map[string]bool{"test": true, "test2": true}},
-		"false for one items not in two item in set": {additions: []string{"test", "test2"}, tests: map[string]bool{"test": true, "test3": false}},
+		"false for not in empty filter":              {adds: adds{}, checks: checks{"test": false}},
+		"true for single item":                       {adds: adds{"test"}, checks: checks{"test": true}},
+		"false for single item not exists":           {adds: adds{"test"}, checks: checks{"tree": false}},
+		"true for both items in set":                 {adds: adds{"test", "test2"}, checks: checks{"test": true, "test2": true}},
+		"false for one items not in two item in set": {adds: adds{"test", "test2"}, checks: checks{"test": true, "test3": false}},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			bf := &BloomFilter{
-				ItemCount:                uint32(len(tc.additions)),
+				ItemCount:                uint32(len(tc.adds)),
 				FalsePositiveProbability: 0.05,
 			}
-			for _, a := range tc.additions {
+			for _, a := range tc.adds {
 				bf.Add(a)
 			}
-			for v, want := range tc.tests {
+			for v, want := range tc.checks {
 				if got := bf.Exists(v); got != want {
 					t.Errorf("expected Exists to return [%t] for vale [%s] got: [%t]", want, v, got)
 				}
