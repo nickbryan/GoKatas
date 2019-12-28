@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -87,6 +88,58 @@ func TestApp_FetchWordList(t *testing.T) {
 				if readTmpFile(t) != tc.payload {
 					t.Errorf("tmp file wrong contents: expected: %s, got: %s", tc.payload, b.String())
 				}
+			}
+		})
+	}
+}
+
+func TestApp_Run(t *testing.T) {
+	testDic := `
+hello
+world
+this
+is
+a
+test
+dictionary
+that
+does
+not
+contain
+all
+of
+the
+world
+`
+
+	tests := map[string]struct {
+		dic    string
+		input  string
+		output string
+	}{
+		"world is correct if in list":             {dic: testDic, input: "hello\nq\n", output: "Check word: hello is spelled correctly.\nCheck word: "},
+		"world is correct if in list second word": {dic: testDic, input: "world\nq\n", output: "Check word: world is spelled correctly.\nCheck word: "},
+		"world is incorrect if not in list":       {dic: testDic, input: "pizza\nq\n", output: "Check word: pizza is not spelled correctly.\nCheck word: "},
+	}
+
+	cleanTmpFile(t)
+	s := httptest.NewServer(nil)
+	defer s.Close()
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			defer cleanTmpFile(t)
+			writeTmpFile(t, tc.dic)
+
+			got := &bytes.Buffer{}
+			w := strings.NewReader(tc.input)
+			a := &App{HttpClient: s.Client(), BaseURL: new(url.URL), Output: got, Input: w}
+			if err := a.Run(); err != nil {
+				t.Fatalf("run caused an errror: %v", err)
+			}
+
+			if got.String() != tc.output {
+				t.Errorf("expected: %s, got: %s", tc.output, got.String())
 			}
 		})
 	}

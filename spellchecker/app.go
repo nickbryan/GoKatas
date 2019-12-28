@@ -17,11 +17,15 @@ const (
 	tmpFile  = "/tmp/sc_dictionary"
 )
 
+// App encapsulates the functionality of the spellchecker.
 type App struct {
 	HttpClient *http.Client
 	BaseURL    *url.URL
+	Output     io.Writer
+	Input      io.Reader
 }
 
+// NewApp will create a new app and parse the baseURL.
 func NewApp(baseURL string) (*App, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
@@ -31,9 +35,14 @@ func NewApp(baseURL string) (*App, error) {
 	return &App{
 		HttpClient: &http.Client{},
 		BaseURL:    u,
+		Output:     os.Stdout,
+		Input:      os.Stdin,
 	}, nil
 }
 
+// Run will load the dictionary into the bloom filter before starting a loop to listen
+// for user input. It will check the input from the user against the bloom filter to see if
+// the worlds are correct according to the dictionary.
 func (a *App) Run() error {
 	wl, _ := a.FetchWordList()
 
@@ -53,9 +62,12 @@ func (a *App) Run() error {
 		bf.Add(s.Text())
 	}
 
-	r := bufio.NewReader(os.Stdin)
+	r := bufio.NewReader(a.Input)
 	for {
-		fmt.Print("Check word: ")
+		if _, err := a.Output.Write([]byte("Check word: ")); err != nil {
+			return fmt.Errorf("unable to write output: %w", err)
+		}
+
 		i, err := r.ReadString('\n')
 		if err != nil {
 			return fmt.Errorf("unable to read input: %v", err)
@@ -63,16 +75,28 @@ func (a *App) Run() error {
 
 		i = strings.Trim(i, "\n")
 
+		if i == "q" {
+			break
+		}
+
 		var output string
 		if bf.Exists(i) {
-			output = fmt.Sprintf("%s is spelled correctly.", i)
+			output = fmt.Sprintf("%s is spelled correctly.\n", i)
 		} else {
-			output = fmt.Sprintf("%s is not spelled correctly.", i)
+			output = fmt.Sprintf("%s is not spelled correctly.\n", i)
 		}
-		fmt.Println(output)
+
+		if _, err := a.Output.Write([]byte(output)); err != nil {
+			return fmt.Errorf("unable to write output: %w", err)
+		}
 	}
+
+	return nil
 }
 
+// FetchWorldList will check for a tmp file before fetching the fill dictionary from the remote service.
+// If the tmp file exists then that will be used to save downloading the full dictionary. If the dictionary
+// has to be downloaded then it will be written to a tmp file to make future runs faster.
 func (a *App) FetchWordList() (io.ReadSeeker, error) {
 	if _, err := os.Stat(tmpFile); os.IsNotExist(err) {
 		b, err := a.fetchWordListFromRemote()
