@@ -3,6 +3,7 @@ package spellchecker
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -14,6 +15,7 @@ type fetchTC struct {
 	payload    string
 	statusCode int
 	err        error
+	tmpDic     string
 	t          *testing.T
 }
 
@@ -31,19 +33,30 @@ func (ftc *fetchTC) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func TestApp_FetchWordList(t *testing.T) {
 	tests := map[string]*fetchTC{
-		"successful payload is returned": &fetchTC{
+		"successful payload is returned": {
 			statusCode: http.StatusOK,
 			payload:    "hello\nworld",
 			err:        nil,
+			tmpDic:     "",
 		},
-		"unsuccessful status code is handled": &fetchTC{
+		"unsuccessful status code is handled": {
 			statusCode: http.StatusNotFound,
 			err:        errors.New("unable to fetch from remote: unable to fetch word last status code: 404"),
+			tmpDic:     "",
+		},
+		"tmp file is not updated if exists": {
+			payload: "hello\nworld\n",
+			tmpDic:  "hello\nworld\n",
 		},
 	}
 
+	cleanTmpFile(t)
+
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
+			if tc.tmpDic != "" {
+				writeTmpFile(t, tc.tmpDic)
+			}
 			defer cleanTmpFile(t)
 
 			tc.t = t
@@ -69,11 +82,29 @@ func TestApp_FetchWordList(t *testing.T) {
 					t.Fatalf("unable to read from response: %v", err)
 				}
 				if b.String() != tc.payload {
-					t.Errorf("expected: %s, got: %s", tc.payload, b.String())
+					t.Errorf("incorrect retrun: expected: %s, got: %s", tc.payload, b.String())
+				}
+				if readTmpFile(t) != tc.payload {
+					t.Errorf("tmp file wrong contents: expected: %s, got: %s", tc.payload, b.String())
 				}
 			}
 		})
 	}
+}
+
+func writeTmpFile(t *testing.T, s string) {
+	if err := ioutil.WriteFile(tmpFile, []byte(s), 0644); err != nil {
+		t.Fatalf("unable to write dictionary: %v", err)
+	}
+}
+
+func readTmpFile(t *testing.T) string {
+	b, err := ioutil.ReadFile(tmpFile)
+	if err != nil {
+		t.Fatalf("unable to read dictionary: %v", err)
+	}
+
+	return string(b)
 }
 
 func cleanTmpFile(t *testing.T) {
